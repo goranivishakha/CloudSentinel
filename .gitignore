@@ -1,0 +1,31 @@
+# Local Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python Cache & Temp files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.streamlit/
+
+# Dynamic Output Telemetry (Private AWS footprint data)
+reports/
+scan_history/
+*.json
+*.csv
+
+# OS metadata
+.DS_Store
+Thumbs.db
+# Exclude scratchpad and draft scripts
+hello_aws.py
+s3_scanner_v2.py
+s3_public_access_detector_v2.py
+iam_scanner.py
+test_engines.py
+test_scoring_iam.py
+test_remediation_history.py

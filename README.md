@@ -1,40 +1,79 @@
 # CloudSentinel
-Automated AWS Security Posture Management (CSPM) Platform.
 
-CloudSentinel is an on-demand Cloud Security Posture Management (CSPM) tool built to identify common AWS S3 and IAM misconfigurations, calculate a security posture score, and provide clear remediation runbooks.
+![Python](https://img.shields.io/badge/Python-3.9+-blue?style=flat-square&logo=python)
+![AWS](https://img.shields.io/badge/AWS-Supported-orange?style=flat-square&logo=amazon-aws)
+![Status](https://img.shields.io/badge/Status-Active_Development-brightgreen?style=flat-square)
 
-It is designed as an educational project to demonstrate practical cloud security auditing, data normalization patterns, and object-oriented Python scripting.
+CloudSentinel is an on-demand Cloud Security Posture Management (CSPM) tool built to identify common AWS misconfigurations, calculate an overall security score, and provide clear remediation runbooks. 
 
-🏗️ Pipeline Architecture
+It is designed as a modular portfolio project to demonstrate practical cloud auditing, data normalization patterns, and infrastructure security principles.
 
-   ┌──────────────────────────────┐
-   │    cloudscan_orchestrator.py │ <── Pipeline Coordinator
-   └──────────────┬───────────────┘
-                  │
-        ┌─────────┴─────────┐
-        ▼                   ▼
-┌──────────────┐    ┌──────────────┐
-│  S3 Scanner  │    │ IAM Scanner  │
-└────────┬─────┘    └──────┬───────┘
-         │                  │
-         └────────┬─────────┘
-                  ▼
-┌──────────────────────────────────┐
-│       engine/findings.py         │ <── Normalizes raw data to Finding objects
-└─────────────────┬────────────────┘
-                  ▼
-┌──────────────────────────────────┐
-│  engine/severity.py & scoring.py │ <── Rule-based severity & scoring calculations
-└─────────────────┬────────────────┘
-                  ▼
-┌──────────────────────────────────┐
-│engine/remediation.py & history.py│ <── Creates fix plans & writes JSON to disk
-└─────────────────┬────────────────┘
-                  ▼
-┌──────────────────────────────────┐
-│           dashboard.py           │ <── Visualizes analytics & trends
-└──────────────────────────────────┘
+---
 
+## Key Capabilities
+
+- **On-Demand Auditing**: Scans S3 buckets and IAM identities via `boto3`.
+- **Data Normalization**: Converts raw AWS API outputs from different services into an identical `Finding` object format.
+- **Rule-Based Severity Assessment**: Evaluates vulnerabilities against 11 baseline rules to assign risk levels (Critical, High, Medium, Low).
+- **Postures & Scoring**: Computes a dynamic security score (0-100 scale) based on deterministic point deductions.
+- **Triage Optimization**: Builds prioritized remediation queues with time estimates and clear execution steps.
+- **Visual Portal**: Features a minimalist Slate-and-Emerald web dashboard built with Streamlit and Plotly.
+
+## System Architecture
+
+```text
+[ cloudscan_orchestrator.py ] <── Pipeline Coordinator (CLI / UI Entrypoint)
+              │
+              ├───► [ S3 Scanner ]   ───► Audits Buckets, Blocks, & Encryption
+              └───► [ IAM Scanner ]  ───► Audits Users, MFA, & Access Keys
+              │
+              ▼
+    [ engine/findings.py ]   <── Data Normalization into Standard Finding Objects
+              │
+              ▼
+[ engine/severity.py & scoring.py ] <── Rule Engine & Dynamic Point Deductions (0-100)
+              │
+              ▼
+[ engine/remediation.py & history.py ] <── Generates Actionable Runbooks & Saves Logs
+              │
+              ▼
+       [ dashboard.py ]      <── Minimalist Slate & Emerald Web Portal
+```
+
+## This project demonstrates:
+- Cloud security fundamentals (AWS S3, IAM, MFA, encryption)
+- Software architecture (modular engines, separation of concerns)
+- Python best practices (OOP, caching, error handling)
+- DevSecOps thinking (findings → scoring → remediation → trending)
+- UI/UX design (Streamlit dashboard with professional styling)
+
+## 🛠️ Local Installation & Setup
+
+#### Prerequisites
+
+Python 3.9 or higher
+
+An active AWS Account
+
+AWS CLI configured locally with read-only permissions (aws configure)
+
+Run Commands
+
+#### 1. Clone the project and navigate to the directory
+cd CloudSentinel
+
+#### 2. Configure your Python virtual environment
+python3 -m venv venv or python -m venv venv
+###### Windows users: .\venv\Scripts\activate
+
+#### 3. Install the required dependencies
+pip install -r requirements.txt
+
+#### 4. Execute the orchestrator scan
+python3 cloudscan_orchestrator.py or python cloudscan_orchestrator.py
+
+#### 5. Launch the Streamlit dashboard
+streamlit run dashboard.py
 
 ## 🔒 Security Audits & Rules Checked
 
@@ -64,83 +103,36 @@ IAM_UNUSED_ACCESS_KEY (Medium - 10 pts): Flags active access keys that have not 
 
 IAM_ADMIN_ROLE_ASSUMED (High - 15 pts): Scans IAM roles to identify non-AWS services with unrestricted administrative access.
 
-### 📉 Dynamic Score Calculation
+## 📉 Dynamic Score Calculation
 
 Every scanned environment starts with a perfect score of 100. For each misconfiguration discovered, the engine applies a specific penalty deduction:
 
 $$\text{Final Score} = \max(0, 100 - \sum \text{Deducted Points})$$
 
-Score Grading Scale
+### Grading Scale
 
-Score Range
+| Score Range | Assigned Grade | Environmental Status |
+| :--- | :---: | :--- |
+| **90 - 100** | A | Excellent Security Posture |
+| **80 - 89**  | B | Good Baseline Security |
+| **70 - 79**  | C | Fair Posture (Remediation Due) |
+| **60 - 69**  | D | Poor Environment Hygiene |
+| **< 60**     | F | Critical Risks Detected |
 
-Letter Grade
+## Who Is This For?
 
-Operational Status
+This project is designed for:
+- **Cloud Security Engineers** learning CSPM architecture
+- **DevSecOps Teams** wanting automated security auditing
+- **AWS Learners** understanding real-world security patterns
+- **Portfolio Builders** demonstrating cloud security skills
+- **Interview Prep** showing architectural thinking to recruiters
 
-$90 - 100$
-
-A
-
-Excellent
-
-$80 - 89$
-
-B
-
-Good
-
-$70 - 79$
-
-C
-
-Fair
-
-$60 - 69$
-
-D
-
-Poor
-
-$< 60$
-
-F
-
-Critical Risk
-
-### 🛠️ Local Installation & Setup
-
-#### Prerequisites
-
-Python 3.9 or higher
-
-An active AWS Account
-
-AWS CLI configured locally with read-only permissions (aws configure)
-
-Run Commands
-
-#### 1. Clone the project and navigate to the directory
-cd CloudSentinel
-
-#### 2. Configure your Python virtual environment
-python3 -m venv venv
-source venv/bin/activate  # Windows users: .\venv\Scripts\activate
-
-#### 3. Install the required dependencies
-pip install -r requirements.txt
-
-#### 4. Execute the orchestrator scan
-python3 cloudscan_orchestrator.py
-
-#### 5. Launch the Streamlit dashboard
-streamlit run dashboard.py
-
-
-### 🛡️ Target AWS Read-Only Permissions
+## 🛡️ Target AWS Read-Only Permissions
 
 This project runs safely without modifying any live cloud resources. It requires the following read-only IAM permissions:
 
+```json
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -166,7 +158,8 @@ This project runs safely without modifying any live cloud resources. It requires
   ]
 }
 
-
+```
+```text
 ### 📂 Project Directory Structure
 
 CloudSentinel/
